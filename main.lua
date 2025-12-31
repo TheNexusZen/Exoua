@@ -1,13 +1,22 @@
-level = {
-  metadata = {
-    name = "test",
-    author = "exoua",
-    version = 1
-  },
-  objects = {
-    { type = "platform", x = 0, y = 0, w = 5, h = 1 },
-    { type = "spike", x = 3, y = 1 }
-  }
+local exoua = require("exoua")
+local json = require("json")
+
+local lvl = exoua.level{
+  name = "test",
+  author = "me",
+  version = 1
 }
 
-return level
+lvl:terrain{
+  pos = { x = 0, y = 0 },
+  scale = { x = 5, y = 1 },
+  color = "FFFFFF00"
+}
+
+lvl:killer{
+  pos = { x = 3, y = 1 }
+}
+
+local f = io.open("level.json", "w")
+f:write(json.encode(lvl:export()))
+f:close()
