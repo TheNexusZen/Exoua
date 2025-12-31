@@ -1,0 +1,22 @@
+name: Build Exoua Level
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Run converter
+        run: cargo run --manifest-path rust/Cargo.toml
+
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: level
+          path: rust/level.json
