@@ -1,5 +1,4 @@
 local exoua = require("exoua")
-local json = require("json")
 
 local lvl = exoua.level{
   name = "test",
