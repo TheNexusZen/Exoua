@@ -1,22 +1,17 @@
-return {
-  metadata = {
-    name = "Test Level",
-    author = "exoua",
-    version = 1
-  },
+local exoua = require("exoua")
 
-  objects = {
-    {
-      type = "terrain",
-      pos = { x = 0, y = 0 },
-      size = { w = 5, h = 1 },
-      color = "FFFFFF00"
-    },
-
-    {
-      type = "killer",
-      pos = { x = 3, y = 1 },
-      scale = { x = 1, y = 1 }
-    }
-  }
+local lvl = exoua.level{
+  name = "Test Level",
+  author = "Nexus",
+  version = 1
 }
+
+lvl:terrain{
+  pos = { x = 0, y = 0 }
+}
+
+lvl:killer{
+  pos = { x = 3, y = 1 }
+}
+
+return lvl:export()
