@@ -1,9 +1,7 @@
-local exoua = require("exoua")
-
-local lvl = {
+return {
   metadata = {
     name = "Test Level",
-    author = "Exoua",
+    author = "exoua",
     version = 1
   },
 
@@ -12,13 +10,13 @@ local lvl = {
       type = "terrain",
       pos = { x = 0, y = 0 },
       size = { w = 5, h = 1 },
-      color = "FFFFFFFF"
+      color = "FFFFFF00"
     },
+
     {
       type = "killer",
-      pos = { x = 3, y = 1 }
+      pos = { x = 3, y = 1 },
+      scale = { x = 1, y = 1 }
     }
   }
 }
-
-return lvl
