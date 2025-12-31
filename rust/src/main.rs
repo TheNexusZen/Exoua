@@ -1,23 +1,20 @@
 use std::fs;
-use std::io::Cursor;
-
-use exolvl::{
-    types::exolvl::Exolvl,
-    Read,
-    Write,
-};
+use exolvl::{Read, Write};
+use exolvl::types::exolvl::Exolvl;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let compressed = fs::read("sample.exolvl")?;
 
-    let mut cursor = Cursor::new(compressed);
-    let exo = Exolvl::read(&mut cursor)?;
+    let raw = exolvl::gzip::read(&compressed)?;
 
-    let mut out = Vec::new();
-    exo.write(&mut out)?;
+    let exo = Exolvl::read(&mut raw.as_slice())?;
 
-    let compressed_out = exolvl::gzip::compress(&out)?;
-    fs::write("out.exolvl", compressed_out)?;
+    let mut out_raw = Vec::new();
+    exo.write(&mut out_raw)?;
+
+    let out_compressed = exolvl::gzip::compress(&out_raw)?;
+
+    fs::write("out.exolvl", out_compressed)?;
 
     Ok(())
 }
