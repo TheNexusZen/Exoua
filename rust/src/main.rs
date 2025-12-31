@@ -1,18 +1,18 @@
 use mlua::{Lua, Value};
-use serde_json::{Value as JsonValue};
+use serde_json::Value as JsonValue;
 use std::fs;
-use std::io::Write;
 
 use exolvl::{
+    gzip,
     types::{
         exolvl::Exolvl,
+        local_level::LocalLevel,
         level_data::LevelData,
         author_replay::AuthorReplay,
         object::Object,
         vec2::Vec2,
-        local_level::LocalLevel,
+        object_group::ObjectGroup,
     },
-    Write as ExoWrite,
 };
 
 use ordered_float::OrderedFloat;
@@ -33,14 +33,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn json_to_exolvl(json: &JsonValue) -> Result<(), Box<dyn std::error::Error>> {
     let mut local = LocalLevel::default();
 
+    let mut group = ObjectGroup::default();
+
     if let Some(objects) = json.get("objects").and_then(|v| v.as_array()) {
         for obj in objects {
             let x = obj.get("x").and_then(|v| v.as_f64()).unwrap_or(0.0);
             let y = obj.get("y").and_then(|v| v.as_f64()).unwrap_or(0.0);
+
             let w = obj.get("w").and_then(|v| v.as_f64()).unwrap_or(1.0);
             let h = obj.get("h").and_then(|v| v.as_f64()).unwrap_or(1.0);
 
-            local.objects.push(Object {
+            group.objects.push(Object {
                 entity_id: 0,
                 tile_id: 0,
                 prefab_entity_id: 0,
@@ -63,6 +66,8 @@ fn json_to_exolvl(json: &JsonValue) -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    local.object_groups.push(group);
+
     let exo = Exolvl {
         local_level: local,
         level_data: LevelData::default(),
@@ -72,7 +77,7 @@ fn json_to_exolvl(json: &JsonValue) -> Result<(), Box<dyn std::error::Error>> {
     let mut raw = Vec::new();
     exo.write(&mut raw)?;
 
-    let compressed = exolvl::gzip::compress(&raw)?;
+    let compressed = gzip::compress(&raw)?;
     fs::write("level.exolvl", compressed)?;
 
     Ok(())
@@ -83,7 +88,9 @@ fn lua_to_json(v: Value) -> Result<JsonValue, Box<dyn std::error::Error>> {
         Value::Nil => JsonValue::Null,
         Value::Boolean(b) => JsonValue::Bool(b),
         Value::Integer(i) => JsonValue::Number(i.into()),
-        Value::Number(n) => JsonValue::Number(serde_json::Number::from_f64(n).unwrap()),
+        Value::Number(n) => serde_json::Number::from_f64(n)
+            .map(JsonValue::Number)
+            .unwrap_or(JsonValue::Null),
         Value::String(s) => JsonValue::String(s.to_str()?.to_string()),
         Value::Table(t) => {
             let mut obj = serde_json::Map::new();
