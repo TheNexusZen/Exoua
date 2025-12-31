@@ -21,3 +21,18 @@ jobs:
 
       - name: Build Rust (if present)
         run: cargo build
+
+      - name: Run Rust binary
+        run: cargo run
+
+      - name: List generated files
+        run: ls -la
+
+      - name: Upload generated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: exoua-output
+          path: |
+            *.exolvl
+            *.json
+            output/**
