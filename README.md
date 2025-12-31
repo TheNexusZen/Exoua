@@ -22,8 +22,8 @@ Rust only writes the final level file.
 
 - [ ] Define full Lua level API  
 - [ ] Support basic objects (platforms, spikes, etc.)  
-- [ ] Deterministic IDs and ordering  
-- [ ] Optional CLI arguments  
+- [x] Deterministic IDs and ordering  
+- [x] Optional CLI arguments  
 - [ ] AI-generated Lua support  
 - [ ] Documentation for all Lua functions  
 - [ ] Implement ExoScript / NovaScript support  
