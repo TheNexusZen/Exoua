@@ -1,49 +1,48 @@
-use mlua::Lua;
-use serde_json::Value;
-use std::fs;
+use mlua::{Lua, Value};
+use serde_json::{Value as JsonValue, Map};
+use std::fs::File;
+use std::io::Write;
 
-fn main() -> anyhow::Result<()> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let lua = Lua::new();
-
-    let level_lua = fs::read_to_string("lua/level.lua")?;
-    lua.load(&level_lua).exec()?;
-
-    let globals = lua.globals();
-    let objects: mlua::Table = globals.get("objects")?;
-
-    let json = lua_table_to_json(objects)?;
-    fs::write("level.json", serde_json::to_vec_pretty(&json)?)?;
-
+    let code = std::fs::read_to_string("main.lua")?;
+    let value: Value = lua.load(&code).eval()?;
+    let json = lua_to_json(value)?;
+    let mut file = File::create("level.json")?;
+    file.write_all(serde_json::to_string_pretty(&json)?.as_bytes())?;
     Ok(())
 }
 
-fn lua_table_to_json(table: mlua::Table) -> anyhow::Result<Value> {
-    let mut vec = Vec::new();
-
-    for pair in table.sequence_values::<mlua::Table>() {
-        let t = pair?;
-        let mut obj = serde_json::Map::new();
-
-        for pair in t.pairs::<String, mlua::Value>() {
-            let (k, v) = pair?;
-            obj.insert(k, lua_value(v)?);
-        }
-
-        vec.push(Value::Object(obj));
-    }
-
-    Ok(Value::Array(vec))
-}
-
-fn lua_value(v: mlua::Value) -> anyhow::Result<Value> {
+fn lua_to_json(v: Value) -> Result<JsonValue, Box<dyn std::error::Error>> {
     Ok(match v {
-        mlua::Value::Nil => Value::Null,
-        mlua::Value::Boolean(b) => Value::Bool(b),
-        mlua::Value::Integer(i) => Value::Number(i.into()),
-        mlua::Value::Number(n) => Value::Number(
-            serde_json::Number::from_f64(n).unwrap()
-        ),
-        mlua::Value::String(s) => Value::String(s.to_str()?.to_string()),
-        _ => Value::Null
+        Value::Nil => JsonValue::Null,
+        Value::Boolean(b) => JsonValue::Bool(b),
+        Value::Integer(i) => JsonValue::Number(i.into()),
+        Value::Number(n) => JsonValue::Number(serde_json::Number::from_f64(n).unwrap()),
+        Value::String(s) => JsonValue::String(s.to_str()?.to_string()),
+        Value::Table(t) => {
+            let mut map = Map::new();
+            let mut array = Vec::new();
+            let mut is_array = true;
+
+            for pair in t.pairs::<Value, Value>() {
+                let (k, v) = pair?;
+                if let Value::Integer(_) = k {
+                    array.push(lua_to_json(v)?);
+                } else {
+                    is_array = false;
+                    if let Value::String(s) = k {
+                        map.insert(s.to_str()?.to_string(), lua_to_json(v)?);
+                    }
+                }
+            }
+
+            if is_array {
+                JsonValue::Array(array)
+            } else {
+                JsonValue::Object(map)
+            }
+        }
+        _ => JsonValue::Null
     })
 }
