@@ -1,22 +1,25 @@
-use mlua::{Lua, Value};
-use serde_json::Value as JsonValue;
 use std::fs;
+use std::io::Write;
 
-use exolvl::types::exolvl::Exolvl;
+use anyhow::Result;
+use exolvl::{
+    types::exolvl::Exolvl,
+    types::level_data::LevelData,
+    Write as ExoWrite,
+};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let lua = Lua::new();
-    let code = fs::read_to_string("main.lua")?;
-    let value: Value = lua.load(&code).eval()?;
+fn main() -> Result<()> {
+    let json_string = fs::read_to_string("level.json")?;
 
-    let json = lua_to_json(value)?;
-    let json_string = serde_json::to_string(&json)?;
+    let mut level_data = LevelData::default();
+    level_data.nova_level = true;
+    level_data.nova_level_json = Some(json_string);
 
-    fs::write("level.json", serde_json::to_string_pretty(&json)?)?;
-
-    let mut exo = Exolvl::default();
-
-    exo.level_data.nova_level = Some(json_string);
+    let exo = Exolvl {
+        local_level: None,
+        level_data,
+        author_replay: None,
+    };
 
     let mut raw = Vec::new();
     exo.write(&mut raw)?;
@@ -25,38 +28,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     fs::write("level.exolvl", compressed)?;
 
     Ok(())
-}
-
-fn lua_to_json(v: Value) -> Result<JsonValue, Box<dyn std::error::Error>> {
-    Ok(match v {
-        Value::Nil => JsonValue::Null,
-        Value::Boolean(b) => JsonValue::Bool(b),
-        Value::Integer(i) => JsonValue::Number(i.into()),
-        Value::Number(n) => JsonValue::Number(serde_json::Number::from_f64(n).unwrap()),
-        Value::String(s) => JsonValue::String(s.to_str()?.to_string()),
-        Value::Table(t) => {
-            let mut obj = serde_json::Map::new();
-            let mut arr = Vec::new();
-            let mut is_array = true;
-
-            for pair in t.pairs::<Value, Value>() {
-                let (k, v) = pair?;
-                match k {
-                    Value::Integer(_) => arr.push(lua_to_json(v)?),
-                    Value::String(s) => {
-                        is_array = false;
-                        obj.insert(s.to_str()?.to_string(), lua_to_json(v)?);
-                    }
-                    _ => {}
-                }
-            }
-
-            if is_array {
-                JsonValue::Array(arr)
-            } else {
-                JsonValue::Object(obj)
-            }
-        }
-        _ => JsonValue::Null,
-    })
 }
