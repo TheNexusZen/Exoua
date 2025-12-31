@@ -1,21 +1,26 @@
-local exoua = require("exoua")
-
-local lvl = exoua.level{
-  name = "test",
-  author = "me",
-  version = 1
+local level = {
+  metadata = {
+    name = "test",
+    author = "exoua",
+    version = 1
+  },
+  objects = {}
 }
 
-lvl:terrain{
+local function add(obj)
+  level.objects[#level.objects + 1] = obj
+end
+
+add({
+  type = "terrain",
   pos = { x = 0, y = 0 },
   scale = { x = 5, y = 1 },
   color = "FFFFFF00"
-}
+})
 
-lvl:killer{
+add({
+  type = "killer",
   pos = { x = 3, y = 1 }
-}
+})
 
-local f = io.open("level.json", "w")
-f:write(json.encode(lvl:export()))
-f:close()
+return level
