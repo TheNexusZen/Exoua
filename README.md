@@ -26,6 +26,7 @@ Rust only writes the final level file.
 - [ ] Optional CLI arguments  
 - [ ] AI-generated Lua support  
 - [ ] Documentation for all Lua functions  
+- [ ] Implement ExoScript / NovaScript support  
 
 ---
 
