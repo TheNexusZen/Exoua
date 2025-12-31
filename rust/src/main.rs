@@ -1,18 +1,15 @@
-use std::fs;
-use std::io::Write;
+use std::fs::File;
+use std::io::{Read, Write};
 
+use exolvl::{Read as ExoRead, Write as ExoWrite};
 use exolvl::types::exolvl::Exolvl;
-use exolvl::{Read, Write as ExoWrite};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let data = fs::read("sample.exolvl")?;
+    let mut input = File::open("sample.exolvl")?;
+    let exo = Exolvl::read(&mut input)?;
 
-    let exo = Exolvl::read(&data)?;
-
-    let mut out = Vec::new();
-    exo.write(&mut out)?;
-
-    fs::write("out.exolvl", out)?;
+    let mut output = File::create("out.exolvl")?;
+    exo.write(&mut output)?;
 
     Ok(())
 }
