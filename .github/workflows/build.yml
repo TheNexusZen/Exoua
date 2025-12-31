@@ -1,4 +1,4 @@
-name: Build Exoua Level
+name: Build Exoua
 
 on:
   workflow_dispatch:
@@ -10,13 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Lua
+        run: sudo apt-get update && sudo apt-get install -y lua5.4
 
-      - name: Run converter
-        run: cargo run --manifest-path rust/Cargo.toml
+      - name: Run Lua entry
+        run: lua main.lua
 
-      - name: Upload output
-        uses: actions/upload-artifact@v4
-        with:
-          name: level
-          path: rust/level.json
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust (if present)
+        run: cargo build
