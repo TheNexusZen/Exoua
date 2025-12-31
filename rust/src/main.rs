@@ -1,10 +1,18 @@
 use mlua::{Lua, Value};
 use serde_json::Value as JsonValue;
-use std::fs;
 
-use exolvl::types::exolvl::Exolvl;
-use exolvl::Read;
-use exolvl::Write;
+use exolvl::{
+    types::{
+        exolvl::Exolvl,
+        local_level::LocalLevel,
+        object::Object,
+        vec2::Vec2,
+    },
+    Write,
+};
+
+use ordered_float::OrderedFloat;
+use std::fs;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let lua = Lua::new();
@@ -12,15 +20,36 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let value: Value = lua.load(&code).eval()?;
 
     let json = lua_to_json(value)?;
-    let _json_string = serde_json::to_string(&json)?;
 
-    let input = fs::read("sample.exolvl")?;
-    let exo = Exolvl::read(&mut &input[..])?;
+    let mut local = LocalLevel::new();
 
-    let mut out = Vec::new();
-    exo.write(&mut out)?;
+    if let Some(objects) = json.get("objects").and_then(|v| v.as_array()) {
+        for obj in objects {
+            let x = obj.get("x").and_then(|v| v.as_f64()).unwrap_or(0.0);
+            let y = obj.get("y").and_then(|v| v.as_f64()).unwrap_or(0.0);
 
-    fs::write("level.exolvl", out)?;
+            let mut o = Object::new();
+
+            o.position = Vec2 {
+                x: OrderedFloat(x as f32),
+                y: OrderedFloat(y as f32),
+            };
+
+            local.entities.push(o);
+        }
+    }
+
+    let exo = Exolvl {
+        local_level: local,
+        ..Exolvl::new()
+    };
+
+    let mut raw = Vec::new();
+    exo.write(&mut raw)?;
+
+    let compressed = exolvl::gzip::compress(&raw)?;
+    fs::write("level.exolvl", compressed)?;
+
     Ok(())
 }
 
