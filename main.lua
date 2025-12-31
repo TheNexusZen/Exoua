@@ -1,26 +1,17 @@
-local level = {
-  metadata = {
-    name = "test",
-    author = "exoua",
-    version = 1
-  },
-  objects = {}
+local exoua = require("exoua")
+
+local lvl = exoua.level{
+  name = "test",
+  author = "me",
+  version = 1
 }
 
-local function add(obj)
-  level.objects[#level.objects + 1] = obj
-end
+lvl:terrain{
+  pos = { x = 0, y = 0 }
+}
 
-add({
-  type = "terrain",
-  pos = { x = 0, y = 0 },
-  scale = { x = 5, y = 1 },
-  color = "FFFFFF00"
-})
-
-add({
-  type = "killer",
+lvl:killer{
   pos = { x = 3, y = 1 }
-})
+}
 
-return level
+return lvl:export()
