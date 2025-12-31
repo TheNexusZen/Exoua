@@ -20,7 +20,7 @@ fn main() -> Result<()> {
 
     let mut level_data = LevelData::default();
     level_data.nova_level = true;
-    level_data.nova_script = Some(json_string);
+    level_data.nova_scripts.push(json_string);
 
     let exo = Exolvl {
         level_data,
