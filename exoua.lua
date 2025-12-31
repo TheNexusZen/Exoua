@@ -1,42 +1,36 @@
 local exoua = {}
 
-local Level = {}
-Level.__index = Level
-
 function exoua.level(meta)
-  local self = setmetatable({}, Level)
-  self.metadata = meta or {}
-  self.objects = {}
-  return self
-end
-
-local function push(self, kind, props)
-  local obj = { type = kind }
-  if props then
-    for k, v in pairs(props) do
-      obj[k] = v
-    end
-  end
-  table.insert(self.objects, obj)
-end
-
-function Level:terrain(props)
-  push(self, "terrain", props)
-end
-
-function Level:killer(props)
-  push(self, "killer", props)
-end
-
-function Level:object(kind, props)
-  push(self, kind, props)
-end
-
-function Level:export()
-  return {
-    metadata = self.metadata,
-    objects = self.objects
+  local self = {
+    metadata = meta or {},
+    objects = {}
   }
+
+  local function add_object(type_name, props)
+    props.type = type_name
+    table.insert(self.objects, props)
+  end
+
+  function self:terrain(props)
+    add_object("terrain", props)
+  end
+
+  function self:killer(props)
+    add_object("killer", props)
+  end
+
+  function self:object(type_name, props)
+    add_object(type_name, props)
+  end
+
+  function self:export()
+    return {
+      metadata = self.metadata,
+      objects = self.objects
+    }
+  end
+
+  return self
 end
 
 return exoua
