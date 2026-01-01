@@ -2,6 +2,7 @@
 name = "exoua"
 version = "0.1.0"
 edition = "2021"
+default-run = "exoua"
 
 [[bin]]
 name = "exoua"
