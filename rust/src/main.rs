@@ -1,3 +1,5 @@
+mod exolvl;
+
 use std::fs;
 use std::io::Write;
 use std::process::Command;
@@ -6,6 +8,8 @@ use flate2::write::GzEncoder;
 use flate2::Compression;
 
 use serde::{Deserialize, Serialize};
+
+use crate::exolvl::{Color, Level, LevelMetadata, LevelObject, ObjectType, Vector3};
 
 // Structs to match Lua output
 #[derive(Debug, Deserialize, Serialize)]
@@ -31,7 +35,7 @@ fn default_one() -> f32 {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct Color {
+struct LuaColor {
     #[serde(default = "default_255")]
     r: u8,
     #[serde(default = "default_255")]
@@ -47,14 +51,14 @@ fn default_255() -> u8 {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct LevelObject {
+struct LuaObject {
     #[serde(rename = "type")]
     obj_type: String,
     pos: Position,
     #[serde(skip_serializing_if = "Option::is_none")]
     size: Option<Size>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    color: Option<Color>,
+    color: Option<LuaColor>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -65,18 +69,9 @@ struct Metadata {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct LevelData {
+struct LuaLevelData {
     metadata: Metadata,
-    objects: Vec<LevelObject>,
-}
-
-// Custom binary format for .exolvl files
-// This is a placeholder - you'll need to implement the actual Exoracer format
-#[derive(Debug, Serialize, Deserialize)]
-struct ExolvlFormat {
-    version: u32,
-    metadata: Metadata,
-    objects: Vec<LevelObject>,
+    objects: Vec<LuaObject>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -110,48 +105,67 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let json_output = String::from_utf8(lua_output.stdout)?;
-    
-    // Remove any extra whitespace or newlines
     let json_output = json_output.trim();
     
-    println!("Lua output: {}", json_output);
+    println!("Lua output received ({} bytes)", json_output.len());
 
     // Parse JSON from Lua
-    let level_data: LevelData = serde_json::from_str(&json_output)?;
+    let lua_data: LuaLevelData = serde_json::from_str(&json_output)
+        .map_err(|e| format!("Failed to parse JSON: {}", e))?;
 
     println!("\n=== Level Information ===");
-    println!("Name: {}", level_data.metadata.name);
-    println!("Author: {}", level_data.metadata.author);
-    println!("Version: {}", level_data.metadata.version);
-    println!("Objects: {}", level_data.objects.len());
+    println!("Name: {}", lua_data.metadata.name);
+    println!("Author: {}", lua_data.metadata.author);
+    println!("Version: {}", lua_data.metadata.version);
+    println!("Objects: {}", lua_data.objects.len());
     
-    println!("\n=== Objects ===");
-    for (i, obj) in level_data.objects.iter().enumerate() {
-        println!("  {}. {} at ({}, {}, {})", 
+    // Create Level with proper Exoracer format
+    let metadata = LevelMetadata::new(
+        lua_data.metadata.name,
+        lua_data.metadata.author,
+    );
+    
+    let mut level = Level::new(metadata);
+    
+    println!("\n=== Converting Objects ===");
+    for (i, lua_obj) in lua_data.objects.iter().enumerate() {
+        // Convert object type
+        let obj_type = match ObjectType::from_string(&lua_obj.obj_type) {
+            Some(t) => t,
+            None => {
+                eprintln!("Warning: Unknown object type '{}', defaulting to Terrain", lua_obj.obj_type);
+                ObjectType::Terrain
+            }
+        };
+        
+        // Convert position
+        let position = Vector3::new(lua_obj.pos.x, lua_obj.pos.y, lua_obj.pos.z);
+        
+        // Create object
+        let mut obj = LevelObject::new(obj_type, position);
+        
+        // Add size if provided
+        if let Some(size) = &lua_obj.size {
+            obj = obj.with_size(Vector3::new(size.width, size.height, size.depth));
+        }
+        
+        // Add color if provided
+        if let Some(color) = &lua_obj.color {
+            obj = obj.with_color(Color::new(color.r, color.g, color.b, color.a));
+        }
+        
+        println!("  {}. {:?} at ({}, {}, {})", 
                  i + 1,
-                 obj.obj_type, 
-                 obj.pos.x, 
-                 obj.pos.y, 
-                 obj.pos.z);
+                 obj_type, 
+                 lua_obj.pos.x, 
+                 lua_obj.pos.y, 
+                 lua_obj.pos.z);
         
-        if let Some(size) = &obj.size {
-            println!("     Size: {}x{}x{}", size.width, size.height, size.depth);
-        }
-        
-        if let Some(color) = &obj.color {
-            println!("     Color: rgba({}, {}, {}, {})", color.r, color.g, color.b, color.a);
-        }
+        level.add_object(obj);
     }
 
-    // Create ExolvlFormat structure
-    let exolvl_data = ExolvlFormat {
-        version: 1,
-        metadata: level_data.metadata,
-        objects: level_data.objects,
-    };
-
-    // Serialize to binary using bincode
-    let binary_data = bincode::serialize(&exolvl_data)?;
+    // Serialize to binary using proper Exoracer format
+    let binary_data = level.to_bytes()?;
     
     println!("\n=== Writing Level File ===");
     println!("Binary size: {} bytes", binary_data.len());
@@ -162,30 +176,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let compressed_data = encoder.finish()?;
 
     println!("Compressed size: {} bytes", compressed_data.len());
+    println!("Compression ratio: {:.1}%", 
+             (compressed_data.len() as f32 / binary_data.len() as f32) * 100.0);
 
     // Write to file
     fs::write(output_file, compressed_data)?;
-    println!("Level written to: {}", output_file);
-    
-    println!("\n✓ Success!");
+    println!("\n✓ Level written to: {}", output_file);
+    println!("\n=== Success! ===");
 
     Ok(())
-}
-
-// Optional: Function to read and decompress .exolvl files
-#[allow(dead_code)]
-fn read_exolvl(input_file: &str) -> Result<ExolvlFormat, Box<dyn std::error::Error>> {
-    use flate2::read::GzDecoder;
-    use std::io::Read;
-    
-    println!("Reading level from: {}", input_file);
-    
-    let compressed = fs::read(input_file)?;
-    let mut decoder = GzDecoder::new(&compressed[..]);
-    let mut decompressed = Vec::new();
-    decoder.read_to_end(&mut decompressed)?;
-    
-    let level: ExolvlFormat = bincode::deserialize(&decompressed)?;
-    
-    Ok(level)
 }
