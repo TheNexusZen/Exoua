@@ -3,6 +3,10 @@ name = "exoua"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "exoua"
+path = "rust/src/main.rs"
+
 [dependencies]
 # Exoracer level format library
 exolvl = { git = "https://github.com/exoracer/exolvl.git" }
