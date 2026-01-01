@@ -1,0 +1,44 @@
+name: Analyze exolvl format
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    
+    - name: Build analyzer
+      run: cargo build --bin analyze --release
+    
+    - name: Run analyzer on sample.exolvl
+      run: cargo run --bin analyze --release sample.exolvl > analysis_output.txt 2>&1 || true
+    
+    - name: Display analysis results
+      run: cat analysis_output.txt
+    
+    - name: Upload analysis results
+      uses: actions/upload-artifact@v3
+      with:
+        name: analysis-results
+        path: |
+          analysis_output.txt
+          sample.exolvl.raw
+        if-no-files-found: ignore
+    
+    - name: Comment results on commit (if possible)
+      run: |
+        echo "### 📊 Analysis Results" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat analysis_output.txt >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
