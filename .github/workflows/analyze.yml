@@ -19,7 +19,7 @@ jobs:
       run: cargo build --bin analyze --release
     
     - name: Run analyzer on sample.exolvl
-      run: cargo run --bin analyze --release sample.exolvl > analysis_output.txt 2>&1 || true
+      run: cargo run --bin analyze --release ALLOBJS EXO.exolvl > analysis_output.txt 2>&1 || true
     
     - name: Display analysis results
       run: cat analysis_output.txt
