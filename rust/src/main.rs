@@ -9,7 +9,7 @@ use flate2::Compression;
 
 use serde::{Deserialize, Serialize};
 
-use crate::exolvl::{Color, Level, LevelMetadata, LevelObject, ObjectType, Vector3};
+use crate::exolvl::{Level, LevelObject, Vector3};
 
 // Structs to match Lua output
 #[derive(Debug, Deserialize, Serialize)]
@@ -120,41 +120,43 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Objects: {}", lua_data.objects.len());
     
     // Create Level with proper Exoracer format
-    let metadata = LevelMetadata::new(
+    let mut level = Level::new(
         lua_data.metadata.name,
         lua_data.metadata.author,
     );
     
-    let mut level = Level::new(metadata);
-    
     println!("\n=== Converting Objects ===");
     for (i, lua_obj) in lua_data.objects.iter().enumerate() {
-        // Convert object type
-        let obj_type = match ObjectType::from_string(&lua_obj.obj_type) {
-            Some(t) => t,
-            None => {
-                eprintln!("Warning: Unknown object type '{}', defaulting to Terrain", lua_obj.obj_type);
-                ObjectType::Terrain
+        // Convert object type string to number
+        let obj_type = match lua_obj.obj_type.to_lowercase().as_str() {
+            "terrain" => 0,
+            "platform" => 1,
+            "killer" | "spike" => 2,
+            "checkpoint" => 3,
+            "start" => 4,
+            "finish" => 5,
+            _ => {
+                eprintln!("Warning: Unknown object type '{}', defaulting to 0", lua_obj.obj_type);
+                0
             }
         };
         
         // Convert position
         let position = Vector3::new(lua_obj.pos.x, lua_obj.pos.y, lua_obj.pos.z);
         
-        // Create object
-        let mut obj = LevelObject::new(obj_type, position);
+        // Create object with default rotation and scale
+        let obj = LevelObject {
+            obj_type,
+            position,
+            rotation: Vector3::zero(),
+            scale: if let Some(size) = &lua_obj.size {
+                Vector3::new(size.width, size.height, size.depth)
+            } else {
+                Vector3::one()
+            },
+        };
         
-        // Add size if provided
-        if let Some(size) = &lua_obj.size {
-            obj = obj.with_size(Vector3::new(size.width, size.height, size.depth));
-        }
-        
-        // Add color if provided
-        if let Some(color) = &lua_obj.color {
-            obj = obj.with_color(Color::new(color.r, color.g, color.b, color.a));
-        }
-        
-        println!("  {}. {:?} at ({}, {}, {})", 
+        println!("  {}. Type {} at ({}, {}, {})", 
                  i + 1,
                  obj_type, 
                  lua_obj.pos.x, 
