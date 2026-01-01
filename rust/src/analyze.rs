@@ -8,7 +8,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let input_file = if args.len() > 1 {
         &args[1]
     } else {
-        "sample.exolvl"
+        "ALLOBJS EXO.exolvl"
     };
 
     println!("=== Analyzing: {} ===\n", input_file);
