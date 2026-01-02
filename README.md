@@ -54,7 +54,6 @@ local lvl = exoua.level{
 
 lvl:start{ pos = exoua.pos(0, 0) }
 lvl:terrain{ pos = exoua.pos(0, 0) }
-lvl:platform{ pos = exoua.pos(5, 3), size = exoua.size(10, 1) }
 lvl:killer{ pos = exoua.pos(3, 1) }
 lvl:checkpoint{ pos = exoua.pos(20, 5) }
 lvl:finish{ pos = exoua.pos(50, 10) }
@@ -107,7 +106,6 @@ All methods accept a table and return the level (chainable).
 
 - `lvl:start(props)`
 - `lvl:terrain(props)`
-- `lvl:platform(props)`
 - `lvl:killer(props)`
 - `lvl:checkpoint(props)`
 - `lvl:finish(props)`
@@ -117,35 +115,9 @@ All methods accept a table and return the level (chainable).
 
 ### Helper Functions
 
-- `exoua.pos(x, y, z)`
-- `exoua.size(w, h, d)`
-- `exoua.color(r, g, b, a)`
-
----
-
-### Example With Helpers
-
-```lua
-local exoua = require("exoua")
-
-local lvl = exoua.level{
-  name = "Advanced Level",
-  author = "Nexus",
-  version = 1
-}
-
-lvl:platform{
-  pos = exoua.pos(10, 5, 0),
-  size = exoua.size(15, 2, 1),
-  color = exoua.color(255, 128, 64, 255)
-}
-
-lvl:killer{
-  pos = exoua.pos(25, 3)
-}
-
-return lvl:export()
-```
+- `exoua.pos(x, y,)`
+- `exoua.size(w, h,)`
+- `exoua.color(r, g, b, t)`
 
 ---
 
