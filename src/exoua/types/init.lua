@@ -19,4 +19,5 @@ return {
     novascript      = require("exoua.types.novascript"),
     uuid            = require("exoua.types.uuid"),
     datetime        = require("exoua.types.datetime"),
+    level_data      = require("exoua.types.level_data"),
 }
