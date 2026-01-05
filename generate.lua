@@ -1,29 +1,54 @@
+-- generate.lua
+-- Minimal .exolvl generator that DOES NOT rely on OO writer
+
+-- make sure Lua can find ./src
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 
-local Writer = require("exoua.writer")
-local Metadata = require("exoua.types.metadata")
-local Level = require("exoua.types.level")
+local writer = require("exoua.writer")
 
-local writer = Writer:new("test.exolvl")
+-- open output file
+local f = assert(io.open("test.exolvl", "wb"))
 
-local metadata = Metadata.new({
-    level = Level.new({
-        data = {
-            author_replay = {
-                author = "",
-                replay = "",
-            },
-            local_level = {
-                id = "00000000-0000-0000-0000-000000000000",
-                created_at = 0,
-                updated_at = 0,
-            },
-            objects = {},
-            patterns = {},
-            themes = {},
-        },
-    }),
-})
+----------------------------------------------------------------
+-- EXOLVL HEADER
+----------------------------------------------------------------
 
-metadata:write(writer)
-writer:close()
+-- Magic: "EXOL"
+writer.i32(f, 0x4C4F5845) -- little-endian "EXOL"
+
+-- Version
+writer.i32(f, 1)
+
+----------------------------------------------------------------
+-- LEVEL CORE DATA (minimal)
+----------------------------------------------------------------
+
+-- Level ID (int)
+writer.i32(f, 1)
+
+-- Seed
+writer.i32(f, 0)
+
+-- Difficulty
+writer.i32(f, 0)
+
+----------------------------------------------------------------
+-- EMPTY SECTIONS (no metadata, no prefabs, no scripts)
+----------------------------------------------------------------
+
+-- Prefab count
+writer.i32(f, 0)
+
+-- Script count
+writer.i32(f, 0)
+
+-- Object count
+writer.i32(f, 0)
+
+----------------------------------------------------------------
+-- END
+----------------------------------------------------------------
+
+f:close()
+
+print("Generated test.exolvl successfully")
