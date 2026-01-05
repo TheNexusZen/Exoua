@@ -9,20 +9,26 @@ package.path =
 
 local Level = require("exoua.types.level")
 
--- UUID v4 generator (correct format)
-local function uuid_v4()
-    local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-    return template:gsub("[xy]", function(c)
-        local v = (c == "x") and math.random(0, 15)
-                   or math.random(8, 11)
-        return string.format("%x", v)
-    end)
+-- UUID v4 -> 16 raw bytes
+local function uuid_v4_bytes()
+    local bytes = {}
+
+    for i = 1, 16 do
+        bytes[i] = math.random(0, 255)
+    end
+
+    -- version 4
+    bytes[7] = (bytes[7] & 0x0F) | 0x40
+    -- variant 10xx
+    bytes[9] = (bytes[9] & 0x3F) | 0x80
+
+    return bytes
 end
 
 local file = assert(io.open("test.exolvl", "wb"))
 
 local level = {
-    uuid = uuid_v4(),
+    uuid = uuid_v4_bytes(),
     version = 1,
 
     name = "Generated Level",
@@ -40,5 +46,4 @@ local level = {
 Level.write(file, level)
 file:close()
 
-print("Generated test.exolvl")
-print("UUID:", level.uuid)
+print("Generated test.exolvl (binary UUID)")
