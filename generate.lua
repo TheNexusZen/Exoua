@@ -1,40 +1,29 @@
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 
-local write_exolvl = require("exoua.writer")
+local Writer = require("exoua.writer")
+local Metadata = require("exoua.types.metadata")
+local Level = require("exoua.types.level")
 
-local sections = {
-    {
-        id = "metadata",
-        data = require("exoua.types.metadata")({
-            version = 1,
-        }),
-    },
-    {
-        id = "theme",
-        data = require("exoua.types.theme")({}),
-    },
-    {
-        id = "layers",
-        data = {},
-    },
-    {
-        id = "objects",
-        data = {},
-    },
-    {
-        id = "patterns",
-        data = {},
-    },
-    {
-        id = "prefabs",
-        data = {},
-    },
-    {
-        id = "scripts",
-        data = {},
-    },
-}
+local writer = Writer.new("test.exolvl")
 
-local out = assert(io.open("out.exolvl", "wb"))
-write_exolvl(out, sections)
-out:close()
+local metadata = Metadata.new({
+    level = Level.new({
+        data = {
+            author_replay = {
+                author = "",
+                replay = "",
+            },
+            local_level = {
+                id = "00000000-0000-0000-0000-000000000000",
+                created_at = 0,
+                updated_at = 0,
+            },
+            objects = {},
+            patterns = {},
+            themes = {},
+        },
+    }),
+})
+
+metadata:write(writer)
+writer:close()
