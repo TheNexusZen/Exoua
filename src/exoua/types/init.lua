@@ -17,5 +17,6 @@ return {
     varint          = require("exoua.types.varint"),
     vec2            = require("exoua.types.vec2"),
     novascript      = require("exoua.types.novascript"),
-    uuid = require("exoua.types.uuid"),
+    uuid            = require("exoua.types.uuid"),
+    datetime        = require("exoua.types.datetime"),
 }
