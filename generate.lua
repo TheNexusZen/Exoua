@@ -1,42 +1,44 @@
 -- generate.lua
 
--- Seed RNG (important for UUID randomness)
-math.randomseed(os.time() + tonumber(tostring({}):sub(8), 16))
+math.randomseed(os.time())
 
--- Fix package path for GitHub Actions / local
 package.path =
     "./src/?.lua;" ..
     "./src/?/init.lua;" ..
     package.path
 
-local Level  = require("exoua.types.level")
-local Writer = require("exoua.writer")
-local uuid   = require("exoua.types.uuid")
+local Level = require("exoua.types.level")
 
--- Create writer
+-- UUID v4 generator (correct format)
+local function uuid_v4()
+    local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+    return template:gsub("[xy]", function(c)
+        local v = (c == "x") and math.random(0, 15)
+                   or math.random(8, 11)
+        return string.format("%x", v)
+    end)
+end
+
 local file = assert(io.open("test.exolvl", "wb"))
 
--- Create level data
 local level = {
-    uuid = uuid.random(),   -- MUST be random
+    uuid = uuid_v4(),
     version = 1,
 
     name = "Generated Level",
 
     author_time = 0,
 
-    -- MUST exist even if empty
-    objects = {},
-    layers = {},
-    prefabs = {},
+    objects  = {},
+    layers   = {},
+    prefabs  = {},
     patterns = {},
-    themes = {},
-    scripts = {},
+    themes   = {},
+    scripts  = {},
 }
 
--- Write level
 Level.write(file, level)
-
 file:close()
 
-print("Generated test.exolvl successfully")
+print("Generated test.exolvl")
+print("UUID:", level.uuid)
