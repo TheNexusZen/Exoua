@@ -1,45 +1,42 @@
 -- generate.lua
 
--- allow Lua to find ./src
-package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
+-- Seed RNG (important for UUID randomness)
+math.randomseed(os.time() + tonumber(tostring({}):sub(8), 16))
 
-local Level = require("exoua.types.level")
+-- Fix package path for GitHub Actions / local
+package.path =
+    "./src/?.lua;" ..
+    "./src/?/init.lua;" ..
+    package.path
 
--- open output file
+local Level  = require("exoua.types.level")
+local Writer = require("exoua.writer")
+local uuid   = require("exoua.types.uuid")
+
+-- Create writer
 local file = assert(io.open("test.exolvl", "wb"))
 
--- create level
-local level = Level.new({
+-- Create level data
+local level = {
+    uuid = uuid.random(),   -- MUST be random
     version = 1,
 
-    layers = {
-        {
-            id = 1,
-            name = "Main",
+    name = "Generated Level",
 
-            objects = {
-                {
-                    id = 1,
+    author_time = 0,
 
-                    position = { x = 0, y = 0 },
-                    rotation = 0,
-                    scale = { x = 1, y = 1 },
-
-                    prefab = {
-                        name = "test_object",
-                        properties = {}
-                    }
-                }
-            }
-        }
-    },
-
+    -- MUST exist even if empty
+    objects = {},
+    layers = {},
     prefabs = {},
+    patterns = {},
+    themes = {},
     scripts = {},
-})
+}
 
--- write level
-level:write(file)
+-- Write level
+Level.write(file, level)
+
 file:close()
 
-print("Generated test.exolvl")
+print("Generated test.exolvl successfully")
