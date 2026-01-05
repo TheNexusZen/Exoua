@@ -1,1 +1,21 @@
-
+return {
+    action_type     = require("exoua.types.action_type"),
+    author_replay   = require("exoua.types.author_replay"),
+    brush           = require("exoua.types.brush"),
+    color           = require("exoua.types.color"),
+    dynamic_type    = require("exoua.types.dynamic_type"),
+    exolvl          = require("exoua.types.exolvl"),
+    function_call   = require("exoua.types.function_call"),
+    image           = require("exoua.types.image"),
+    layer           = require("exoua.types.layer"),
+    level_data      = require("exoua.types.level_data"),
+    local_level     = require("exoua.types.local_level"),
+    novascript      = require("exoua.types.novascript"),
+    object          = require("exoua.types.object"),
+    object_property = require("exoua.types.object_property"),
+    old_script      = require("exoua.types.old_script"),
+    pattern         = require("exoua.types.pattern"),
+    prefab          = require("exoua.types.prefab"),
+    theme           = require("exoua.types.theme"),
+    vec2            = require("exoua.types.vec2"),
+}
