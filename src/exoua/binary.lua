@@ -15,14 +15,10 @@ function binary.read_i32(f)
     return n
 end
 
-function binary.write_i32(f, n)
-    if n < 0 then n = n + 0x100000000 end
-    f:write(string.char(
-        n & 0xFF,
-        (n >> 8) & 0xFF,
-        (n >> 16) & 0xFF,
-        (n >> 24) & 0xFF
-    ))
+function binary.write_i32(f, v)
+    v = v or 0
+    if v < 0 then v = v + 0x100000000 end
+    binary.write_u32(f, v)
 end
 
 function binary.read_string(f)
