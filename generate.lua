@@ -1,3 +1,4 @@
+package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 -- seed RNG (SAFE)
 math.randomseed(os.time())
 
