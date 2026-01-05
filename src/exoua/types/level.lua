@@ -3,6 +3,7 @@ Level.__index = Level
 
 local Read = require("exoua.read")
 local Write = require("exoua.write")
+local Writer = require("exoua.writer")
 
 local Brush = require("exoua.types.brush")
 local Color = require("exoua.types.color")
