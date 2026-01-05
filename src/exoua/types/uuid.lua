@@ -1,25 +1,18 @@
-local Read = require("exoua.read")
-local Write = require("exoua.write")
+local uuid = {}
 
-local UUID = {}
-UUID.__index = UUID
 
-function UUID.new(bytes)
-    return setmetatable({ bytes = bytes }, UUID)
-end
+function uuid.random()
+    local bytes = {}
 
-function UUID.read(r)
-    local b = {}
     for i = 1, 16 do
-        b[i] = Read.u8(r)
+        bytes[i] = string.char(math.random(0, 255))
     end
-    return UUID.new(b)
+
+    
+    bytes[7]  = string.char((bytes[7]:byte() & 0x0F) | 0x40) 
+    bytes[9]  = string.char((bytes[9]:byte() & 0x3F) | 0x80) 
+
+    return table.concat(bytes)
 end
 
-function UUID:write(w)
-    for i = 1, 16 do
-        Write.u8(w, self.bytes[i])
-    end
-end
-
-return UUID
+return uuid
