@@ -1,10 +1,10 @@
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 
-local Writer = require("exoua.writer")
+local write_exolvl = require("exoua.writer")
 
 local out = assert(io.open("out.exolvl", "wb"))
 
-Writer.write(out, {
+write_exolvl(out, {
     { id = "metadata", data = {} },
     { id = "theme", data = {} },
     { id = "layers", data = {} },
