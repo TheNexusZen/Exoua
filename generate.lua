@@ -1,8 +1,10 @@
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 
-local binary   = require("exoua.binary")
-local writer   = require("exoua.writer")
-local sections = require("exoua.sections")
+local binary = require("exoua.binary")
+local writer = require("exoua.writer")
+
+local SECTION_LOCAL_LEVEL = 2
+local SECTION_LEVEL       = 3
 
 local function write_section(f, id, fn)
     local buf = {}
@@ -21,13 +23,13 @@ end
 
 local f = assert(io.open("test.exolvl", "wb"))
 
-write_section(f, sections.LOCAL_LEVEL, function(w)
+write_section(f, SECTION_LOCAL_LEVEL, function(w)
     writer.string(w, "00000000-0000-0000-0000-000000000001")
     writer.i32(w, os.time())
     writer.i32(w, os.time())
 end)
 
-write_section(f, sections.LEVEL, function(w)
+write_section(f, SECTION_LEVEL, function(w)
     writer.i32(w, 1024)
     writer.i32(w, 1024)
 
