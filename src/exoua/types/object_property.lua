@@ -1,1 +1,91 @@
+local ObjectProperty = {}
 
+function ObjectProperty.new(id, value)
+    return {
+        id = id,
+        value = value
+    }
+end
+
+ObjectProperty.Color = function(v) return ObjectProperty.new(0, v) end
+ObjectProperty.Resolution = function(v) return ObjectProperty.new(1, v) end
+ObjectProperty.FillMode = function(v) return ObjectProperty.new(2, v) end
+ObjectProperty.SecondaryColor = function(v) return ObjectProperty.new(3, v) end
+ObjectProperty.Thickness = function(v) return ObjectProperty.new(4, v) end
+ObjectProperty.TotalAngle = function(v) return ObjectProperty.new(5, v) end
+ObjectProperty.Corners = function(v) return ObjectProperty.new(6, v) end
+ObjectProperty.Blending = function(v) return ObjectProperty.new(7, v) end
+ObjectProperty.GridOffset = function(v) return ObjectProperty.new(8, v) end
+ObjectProperty.CornerRadius = function(v) return ObjectProperty.new(9, v) end
+ObjectProperty.Width = function(v) return ObjectProperty.new(10, v) end
+ObjectProperty.Height = function(v) return ObjectProperty.new(11, v) end
+ObjectProperty.BorderColor = function(v) return ObjectProperty.new(12, v) end
+ObjectProperty.BorderThickness = function(v) return ObjectProperty.new(13, v) end
+ObjectProperty.PhysicsType = function(v) return ObjectProperty.new(14, v) end
+ObjectProperty.Friction = function(v) return ObjectProperty.new(15, v) end
+ObjectProperty.TerrainCorners = function(v) return ObjectProperty.new(16, v) end
+ObjectProperty.Direction = function(v) return ObjectProperty.new(17, v) end
+ObjectProperty.Impulse = function(v) return ObjectProperty.new(18, v) end
+ObjectProperty.Killer = function(v) return ObjectProperty.new(19, v) end
+ObjectProperty.RoundReflexAngles = function(v) return ObjectProperty.new(20, v) end
+ObjectProperty.RoundCollider = function(v) return ObjectProperty.new(21, v) end
+ObjectProperty.Radius = function(v) return ObjectProperty.new(22, v) end
+ObjectProperty.Size = function(v) return ObjectProperty.new(23, v) end
+ObjectProperty.ReverseDirection = function(v) return ObjectProperty.new(24, v) end
+ObjectProperty.CollisionDetector = function(v) return ObjectProperty.new(25, v) end
+ObjectProperty.Pattern = function(v) return ObjectProperty.new(26, v) end
+ObjectProperty.PatternTiling = function(v) return ObjectProperty.new(27, v) end
+ObjectProperty.PatternOffset = function(v) return ObjectProperty.new(28, v) end
+ObjectProperty.Bounce = function(v) return ObjectProperty.new(32, v) end
+ObjectProperty.RestoreVelocity = function(v) return ObjectProperty.new(34, v) end
+ObjectProperty.Sprite = function(v) return ObjectProperty.new(35, v) end
+ObjectProperty.Trigger = function(v) return ObjectProperty.new(36, v) end
+ObjectProperty.Health = function(v) return ObjectProperty.new(37, v) end
+ObjectProperty.DamageFromJump = function(v) return ObjectProperty.new(38, v) end
+ObjectProperty.DamageFromDash = function(v) return ObjectProperty.new(39, v) end
+ObjectProperty.ReverseDirOnDamage = function(v) return ObjectProperty.new(40, v) end
+ObjectProperty.Floating = function(v) return ObjectProperty.new(41, v) end
+ObjectProperty.LinkedObjects = function(v) return ObjectProperty.new(42, v) end
+ObjectProperty.FlipX = function(v) return ObjectProperty.new(43, v) end
+ObjectProperty.FlipY = function(v) return ObjectProperty.new(44, v) end
+ObjectProperty.Text = function(v) return ObjectProperty.new(45, v) end
+ObjectProperty.FontSize = function(v) return ObjectProperty.new(46, v) end
+ObjectProperty.EditorColor = function(v) return ObjectProperty.new(47, v) end
+ObjectProperty.Color2 = function(v) return ObjectProperty.new(48, v) end
+ObjectProperty.Color3 = function(v) return ObjectProperty.new(49, v) end
+ObjectProperty.Color4 = function(v) return ObjectProperty.new(50, v) end
+ObjectProperty.ParticleTexture = function(v) return ObjectProperty.new(51, v) end
+ObjectProperty.Duration = function(v) return ObjectProperty.new(52, v) end
+ObjectProperty.Delay = function(v) return ObjectProperty.new(53, v) end
+ObjectProperty.Loop = function(v) return ObjectProperty.new(54, v) end
+ObjectProperty.AutoPlay = function(v) return ObjectProperty.new(55, v) end
+ObjectProperty.LifetimeMin = function(v) return ObjectProperty.new(56, v) end
+ObjectProperty.LifetimeMax = function(v) return ObjectProperty.new(57, v) end
+ObjectProperty.SimulationSpace = function(v) return ObjectProperty.new(58, v) end
+ObjectProperty.Rate = function(v) return ObjectProperty.new(59, v) end
+ObjectProperty.Burst = function(v) return ObjectProperty.new(60, v) end
+ObjectProperty.EmitterShape = function(v) return ObjectProperty.new(61, v) end
+ObjectProperty.EmitterWidth = function(v) return ObjectProperty.new(62, v) end
+ObjectProperty.EmitterHeight = function(v) return ObjectProperty.new(63, v) end
+ObjectProperty.EmitterTotalAngle = function(v) return ObjectProperty.new(64, v) end
+ObjectProperty.SizeMin = function(v) return ObjectProperty.new(65, v) end
+ObjectProperty.SizeMax = function(v) return ObjectProperty.new(66, v) end
+ObjectProperty.SizeOverLifetime = function(v) return ObjectProperty.new(67, v) end
+ObjectProperty.StartSizeMultiplier = function(v) return ObjectProperty.new(68, v) end
+ObjectProperty.EndSizeMultiplier = function(v) return ObjectProperty.new(69, v) end
+ObjectProperty.SpeedMin = function(v) return ObjectProperty.new(71, v) end
+ObjectProperty.SpeedMax = function(v) return ObjectProperty.new(72, v) end
+ObjectProperty.SpeeLimit = function(v) return ObjectProperty.new(73, v) end
+ObjectProperty.SpeedDampen = function(v) return ObjectProperty.new(74, v) end
+ObjectProperty.RotationMin = function(v) return ObjectProperty.new(75, v) end
+ObjectProperty.RotationMax = function(v) return ObjectProperty.new(76, v) end
+ObjectProperty.Rotationspeed = function(v) return ObjectProperty.new(77, v) end
+ObjectProperty.ColorOverLifetime = function(v) return ObjectProperty.new(78, v) end
+ObjectProperty.StartColorMultiplier = function(v) return ObjectProperty.new(79, v) end
+ObjectProperty.EndColorMultiplier = function(v) return ObjectProperty.new(80, v) end
+ObjectProperty.GravityMultiplier = function(v) return ObjectProperty.new(81, v) end
+ObjectProperty.AnchorPos = function(v) return ObjectProperty.new(82, v) end
+ObjectProperty.MoonInnerRadius = function(v) return ObjectProperty.new(83, v) end
+ObjectProperty.MoonOffset = function(v) return ObjectProperty.new(84, v) end
+
+return ObjectProperty
