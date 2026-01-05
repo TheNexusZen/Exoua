@@ -1,9 +1,8 @@
 return {
-    action = require("exoua.types.novascript.action"),
-    action_type = require("exoua.types.novascript.action_type"),
-    activator = require("exoua.types.novascript.activator"),
-    nova_value = require("exoua.types.novascript.nova_value"),
-    parameter = require("exoua.types.novascript.parameter"),
-    static_type = require("exoua.types.novascript.static_type"),
-    variable = require("exoua.types.novascript.variable"),
+    Action = require("exoua.types.novascript.action"),
+    ActionType = require("exoua.types.novascript.nova_action"),
+    NovaValue = require("exoua.types.novascript.nova_value"),
+    Variable = require("exoua.types.novascript.variable"),
+    Parameter = require("exoua.types.novascript.parameter"),
+    StaticType = require("exoua.types.novascript.static_type"),
 }
