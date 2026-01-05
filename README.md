@@ -1,6 +1,6 @@
 structure
-
-```exoua/
+```
+exoua/
 ├── README.md
 ├── LICENSE
 ├── .gitignore
