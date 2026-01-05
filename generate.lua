@@ -4,28 +4,34 @@ math.randomseed(os.time())
 
 local Types = require("exoua.types")
 
+-- Generate 16 RAW BYTES (this is what writer.uuid requires)
 local function uuid16()
-    local t = {}
+    local bytes = {}
     for i = 1, 16 do
-        t[i] = string.char(math.random(0, 255))
+        bytes[i] = string.char(math.random(0, 255))
     end
-    return table.concat(t)
+    return table.concat(bytes)
 end
 
 local level = {
+    -- MUST be 16 raw bytes
     uuid = uuid16(),
+
     name = "Generated Level",
     description = "",
+
     metadata = {
         created_time = os.time(),
         modified_time = os.time(),
     },
+
     layers = {
         {
             layer_id = 0,
             name = "Main",
             visible = true,
             locked = false,
+
             objects = {
                 {
                     object_id = 0,
@@ -38,6 +44,7 @@ local level = {
             }
         }
     },
+
     novascript = {
         variables = {},
         actions = {},
@@ -48,4 +55,4 @@ local f = assert(io.open("test.exolvl", "wb"))
 Types.level.write(f, level)
 f:close()
 
-print("test.exolvl generated")
+print("test.exolvl generated successfully")
