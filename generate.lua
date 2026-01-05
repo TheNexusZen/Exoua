@@ -4,7 +4,7 @@ local Writer = require("exoua.writer")
 local Metadata = require("exoua.types.metadata")
 local Level = require("exoua.types.level")
 
-local writer = Writer.new("test.exolvl")
+local writer = Writer:new("test.exolvl")
 
 local metadata = Metadata.new({
     level = Level.new({
