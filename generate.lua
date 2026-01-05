@@ -1,49 +1,51 @@
--- generate.lua
-
 math.randomseed(os.time())
 
-package.path =
-    "./src/?.lua;" ..
-    "./src/?/init.lua;" ..
-    package.path
+local Writer = require("exoua.writer")
+local Types  = require("exoua.types")
 
-local Level = require("exoua.types.level")
-
--- UUID v4 as TABLE of 16 bytes (THIS is what writer.uuid wants)
-local function uuid_v4()
-    local u = {}
-
+local function uuid16()
+    local t = {}
     for i = 1, 16 do
-        u[i] = math.random(0, 255)
+        t[i] = math.random(0, 255)
     end
-
-    -- version 4
-    u[7] = (u[7] & 0x0F) | 0x40
-    -- variant 10xx
-    u[9] = (u[9] & 0x3F) | 0x80
-
-    return u
+    return t
 end
 
-local file = assert(io.open("test.exolvl", "wb"))
-
 local level = {
-    uuid = uuid_v4(),
-    version = 1,
-
+    uuid = uuid16(),
     name = "Generated Level",
-
-    author_time = 0,
-
-    objects  = {},
-    layers   = {},
-    prefabs  = {},
-    patterns = {},
-    themes   = {},
-    scripts  = {},
+    description = "",
+    metadata = {
+        version = 1,
+        created_time = os.time(),
+        modified_time = os.time(),
+    },
+    layers = {
+        {
+            layer_id = 0,
+            name = "Layer 1",
+            visible = true,
+            locked = false,
+            objects = {
+                {
+                    object_id = 0,
+                    prefab_id = 0,
+                    position = { x = 0, y = 0 },
+                    rotation = 0,
+                    scale = { x = 1, y = 1 },
+                    color = { r = 255, g = 255, b = 255, a = 255 },
+                }
+            },
+        }
+    },
+    novascript = {
+        variables = {},
+        actions = {},
+    }
 }
 
-Level.write(file, level)
+local file = assert(io.open("test.exolvl", "wb"))
+Types.level.write(file, level)
 file:close()
 
-print("Generated test.exolvl successfully")
+print("test.exolvl generated")
