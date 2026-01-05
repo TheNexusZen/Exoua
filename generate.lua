@@ -1,25 +1,22 @@
+-- allow requiring from ./src
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
--- seed RNG (SAFE)
+
+-- RNG seed
 math.randomseed(os.time())
 
--- UUID v4 generator
+-- UUID v4 (string, writer converts to bytes)
 local function uuid_v4()
     local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
     return template:gsub("[xy]", function(c)
-        local v
-        if c == "x" then
-            v = math.random(0, 15)
-        else
-            v = math.random(8, 11)
-        end
+        local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
         return string.format("%x", v)
     end)
 end
 
--- requires
-local level_type = require("exoua.types.level")
+-- require level writer
+local Level = require("exoua.types.level")
 
--- build level
+-- build level table
 local level = {
     uuid = uuid_v4(),
     name = "Generated Level",
@@ -29,7 +26,8 @@ local level = {
     layers = {
         {
             uuid = uuid_v4(),
-            name = "Main Layer",
+            name = "Layer 1",
+
             objects = {
                 {
                     uuid = uuid_v4(),
@@ -52,8 +50,8 @@ local level = {
 
 -- write file
 local f = assert(io.open("test.exolvl", "wb"))
-level_type.write(f, level)
+Level.write(f, level)
 f:close()
 
 print("Generated test.exolvl")
-print("Level UUID:", level.uuid)
+print("UUID:", level.uuid)
