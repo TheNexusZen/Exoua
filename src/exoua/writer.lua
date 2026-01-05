@@ -23,8 +23,26 @@ function writer.list(f, l, fn)
 end
 
 function writer.uuid(f, uuid)
-    assert(type(uuid) == "string" and #uuid == 16, "uuid must be 16 bytes")
-    f:write(uuid)
-end
+    -- already raw 16-byte binary
+    if type(uuid) == "string" and #uuid == 16 then
+        f:write(uuid)
+        return
+    end
 
+    -- dashed UUID → hex
+    if type(uuid) == "string" then
+        local hex = uuid:gsub("-", "")
+        assert(#hex == 32, "uuid string must be 32 hex chars")
+
+        local bytes = {}
+        for i = 1, 32, 2 do
+            bytes[#bytes + 1] = string.char(tonumber(hex:sub(i, i + 1), 16))
+        end
+
+        f:write(table.concat(bytes))
+        return
+    end
+
+    error("invalid uuid format")
+end
 return writer
