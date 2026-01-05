@@ -4,17 +4,16 @@ math.randomseed(os.time())
 
 local Types = require("exoua.types")
 
--- Generate 16 RAW BYTES (this is what writer.uuid requires)
+-- UUID as TABLE OF 16 BYTES (THIS IS THE FIX)
 local function uuid16()
-    local bytes = {}
+    local t = {}
     for i = 1, 16 do
-        bytes[i] = string.char(math.random(0, 255))
+        t[i] = math.random(0, 255)
     end
-    return table.concat(bytes)
+    return t
 end
 
 local level = {
-    -- MUST be 16 raw bytes
     uuid = uuid16(),
 
     name = "Generated Level",
