@@ -1,6 +1,6 @@
 structure
 
-exoua/
+```exoua/
 ├── README.md
 ├── LICENSE
 ├── .gitignore
@@ -15,4 +15,4 @@ exoua/
 ├── examples/
 │   └── basic.lua
 └── tests/
-    └── roundtrip.lua
+    └── roundtrip.lua```
