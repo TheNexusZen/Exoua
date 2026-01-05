@@ -22,14 +22,14 @@ local Level = require("exoua.types.level")
 
 -- build level table
 local level = {
-    uuid = uuid_v4(),
+    uuid = uuid_bytes(),
     name = "Generated Level",
     description = "",
     authorTime = 0,
 
     layers = {
         {
-            uuid = uuid_v4(),
+            uuid = uuid_bytes(),
             name = "Layer 1",
 
             objects = {
