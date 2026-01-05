@@ -1,7 +1,8 @@
+package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
+
 math.randomseed(os.time())
 
-local Writer = require("exoua.writer")
-local Types  = require("exoua.types")
+local Types = require("exoua.types")
 
 local function uuid16()
     local t = {}
@@ -16,14 +17,13 @@ local level = {
     name = "Generated Level",
     description = "",
     metadata = {
-        version = 1,
         created_time = os.time(),
         modified_time = os.time(),
     },
     layers = {
         {
             layer_id = 0,
-            name = "Layer 1",
+            name = "Main",
             visible = true,
             locked = false,
             objects = {
@@ -35,7 +35,7 @@ local level = {
                     scale = { x = 1, y = 1 },
                     color = { r = 255, g = 255, b = 255, a = 255 },
                 }
-            },
+            }
         }
     },
     novascript = {
@@ -44,8 +44,8 @@ local level = {
     }
 }
 
-local file = assert(io.open("test.exolvl", "wb"))
-Types.level.write(file, level)
-file:close()
+local f = assert(io.open("test.exolvl", "wb"))
+Types.level.write(f, level)
+f:close()
 
 print("test.exolvl generated")
