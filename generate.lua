@@ -9,21 +9,20 @@ package.path =
 
 local Level = require("exoua.types.level")
 
--- UUID v4 as RAW 16-BYTE STRING
+-- UUID v4 as TABLE of 16 bytes (THIS is what writer.uuid wants)
 local function uuid_v4()
-    local bytes = {}
+    local u = {}
 
     for i = 1, 16 do
-        bytes[i] = math.random(0, 255)
+        u[i] = math.random(0, 255)
     end
 
-    -- Version 4
-    bytes[7] = (bytes[7] & 0x0F) | 0x40
-    -- Variant 10xx
-    bytes[9] = (bytes[9] & 0x3F) | 0x80
+    -- version 4
+    u[7] = (u[7] & 0x0F) | 0x40
+    -- variant 10xx
+    u[9] = (u[9] & 0x3F) | 0x80
 
-    -- Convert to binary string (THIS IS THE KEY)
-    return string.char(table.unpack(bytes))
+    return u
 end
 
 local file = assert(io.open("test.exolvl", "wb"))
@@ -47,4 +46,4 @@ local level = {
 Level.write(file, level)
 file:close()
 
-print("Generated test.exolvl (correct UUID format)")
+print("Generated test.exolvl successfully")
