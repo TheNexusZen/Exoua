@@ -1,54 +1,61 @@
 -- generate.lua
--- Minimal .exolvl generator that DOES NOT rely on OO writer
-
--- make sure Lua can find ./src
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 
 local writer = require("exoua.writer")
 
--- open output file
 local f = assert(io.open("test.exolvl", "wb"))
 
-----------------------------------------------------------------
--- EXOLVL HEADER
-----------------------------------------------------------------
+--------------------------------------------------
+-- HEADER
+--------------------------------------------------
+writer.i32(f, 0x4C4F5845) -- "EXOL"
+writer.i32(f, 1)          -- version
 
--- Magic: "EXOL"
-writer.i32(f, 0x4C4F5845) -- little-endian "EXOL"
+--------------------------------------------------
+-- LEVEL CORE
+--------------------------------------------------
+writer.i32(f, 1) -- level id
+writer.i32(f, 0) -- seed
+writer.i32(f, 0) -- difficulty
 
--- Version
-writer.i32(f, 1)
+--------------------------------------------------
+-- LAYERS
+--------------------------------------------------
+writer.i32(f, 1)          -- layer count
 
-----------------------------------------------------------------
--- LEVEL CORE DATA (minimal)
-----------------------------------------------------------------
+-- layer 0
+writer.i32(f, 0)          -- layer id
+writer.string(f, "Main")  -- layer name
+writer.bool(f, true)      -- visible
+writer.bool(f, true)      -- locked
 
--- Level ID (int)
-writer.i32(f, 1)
+--------------------------------------------------
+-- OBJECTS
+--------------------------------------------------
+writer.i32(f, 1) -- object count
 
--- Seed
+-- object 0
+writer.i32(f, 0)   -- object id
+writer.i32(f, 0)   -- layer id
+
+-- position (vec2)
+writer.i32(f, 0)   -- x
+writer.i32(f, 0)   -- y
+
+-- rotation / scale (defaults)
+writer.i32(f, 0)   -- rotation
+writer.i32(f, 1)   -- scale
+
+--------------------------------------------------
+-- SCRIPTS
+--------------------------------------------------
 writer.i32(f, 0)
 
--- Difficulty
+--------------------------------------------------
+-- PREFABS
+--------------------------------------------------
 writer.i32(f, 0)
-
-----------------------------------------------------------------
--- EMPTY SECTIONS (no metadata, no prefabs, no scripts)
-----------------------------------------------------------------
-
--- Prefab count
-writer.i32(f, 0)
-
--- Script count
-writer.i32(f, 0)
-
--- Object count
-writer.i32(f, 0)
-
-----------------------------------------------------------------
--- END
-----------------------------------------------------------------
 
 f:close()
 
-print("Generated test.exolvl successfully")
+print("Generated minimal loadable test.exolvl")
