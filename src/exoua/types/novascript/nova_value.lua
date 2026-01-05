@@ -2,7 +2,8 @@ local Read = require("exoua.read")
 local Write = require("exoua.write")
 
 local Color = require("exoua.types.color")
-local DynamicType = require("exoua.types.dynamic_type")
+local Enums = require("exoua.types.enums")
+local DynamicType = Enums.DynamicType
 local Vec2 = require("exoua.types.vec2")
 
 local NovaValue = {}
