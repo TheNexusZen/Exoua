@@ -1,15 +1,16 @@
 package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 
-math.randomseed(os.time())
-
 local Types = require("exoua.types")
 
-local function uuid16()
-    local t = {}
-    for i = 1, 16 do
-        t[i] = math.random(0, 255)
-    end
-    return string.char(table.unpack(t))
+math.randomseed(os.time() + tonumber(tostring({}):sub(8), 16))
+
+local function uuid_v4()
+    local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+    return template:gsub("[xy]", function(c)
+        local v = (c == "x") and math.random(0, 15)
+                  or math.random(8, 11)
+        return string.format("%x", v)
+    end)
 end
 
 local level = {
