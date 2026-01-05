@@ -1,47 +1,43 @@
-package.path = "src/?.lua;src/?/init.lua;" .. package.path
+local Writer   = require("src.exoua.writer")
+local Sections = require("src.exoua.sections")
+local Types    = require("src.exoua.types")
 
-local Writer = require("exoua.writer")
-local Sections = require("exoua.sections")
+local output = assert(io.open("out.exolvl", "wb"))
 
-local Level = require("exoua.types.level")
-local LocalLevel = require("exoua.types.local_level")
-local Metadata = require("exoua.types.metadata")
-local Theme = require("exoua.types.theme")
-
-local NovaAction = require("exoua.types.novascript.nova_action")
-local Action = require("exoua.types.novascript.action")
-local ActionType = require("exoua.types.novascript.action_type")
-local NovaValue = require("exoua.types.novascript.nova_value")
-local DynamicType = require("exoua.types.dynamic_type")
-
-local level = Level({
-    metadata = Metadata({
-        name = "Generated Level",
+local level = {
+    metadata = {
+        title = "Generated Level",
+        description = "",
         author = "Exoua",
-        description = "Generated via Lua",
-    }),
-    theme = Theme.Mountains,
-    local_level = LocalLevel({
-        actions = {
-            NovaAction({
-                trigger = 0,
-                actions = {
-                    Action({
-                        closed = false,
-                        wait = false,
-                        action_type = ActionType.Wait({
-                            duration = NovaValue.new_float(DynamicType.Float, 1.0)
-                        })
-                    })
-                }
-            })
-        }
-    })
+        version = 1,
+    },
+
+    theme = {
+        id = 0,
+    },
+
+    layers = {},
+
+    objects = {},
+
+    patterns = {},
+
+    prefabs = {},
+
+    scripts = {},
+
+    author_replay = nil,
+}
+
+Writer.write(output, {
+    Sections.Metadata(level.metadata),
+    Sections.Theme(level.theme),
+    Sections.Layers(level.layers),
+    Sections.Objects(level.objects),
+    Sections.Patterns(level.patterns),
+    Sections.Prefabs(level.prefabs),
+    Sections.Scripts(level.scripts),
+    Sections.AuthorReplay(level.author_replay),
 })
 
-local file = assert(io.open("test.exolvl", "wb"))
-local writer = Writer(file)
-
-Sections.write_all(writer, level)
-
-file:close()
+output:close()
