@@ -124,7 +124,7 @@ function Level.read_versioned(reader, version)
 end
 
 function Level:write(writer)
-    Write.uuid(writer, self.level_id)
+    Writer.uuid(f, self.uuid)
     Write.i32(writer, self.level_version)
     Write.bool(writer, self.nova_level)
     Write.array(writer, self.under_decoration_tiles, Write.i32)
