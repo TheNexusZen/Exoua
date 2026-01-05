@@ -4,13 +4,17 @@ package.path = "./src/?.lua;./src/?/init.lua;" .. package.path
 -- RNG seed
 math.randomseed(os.time())
 
--- UUID v4 (string, writer converts to bytes)
-local function uuid_v4()
-    local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-    return template:gsub("[xy]", function(c)
-        local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
-        return string.format("%x", v)
-    end)
+local function uuid_bytes()
+    local t = {}
+    for i = 1, 16 do
+        t[i] = string.char(math.random(0, 255))
+    end
+
+    -- RFC 4122 v4 bits
+    t[7] = string.char((string.byte(t[7]) & 0x0F) | 0x40)
+    t[9] = string.char((string.byte(t[9]) & 0x3F) | 0x80)
+
+    return table.concat(t)
 end
 
 -- require level writer
